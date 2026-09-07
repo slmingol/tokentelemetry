@@ -31,6 +31,8 @@ DEFAULT_DIRNAME = ".tokentelemetry"
 
 # Windows-shaped path prefixes: a drive letter (`C:`) or a UNC root (`\\`).
 _WIN_PATH_RE = re.compile(r"^(?:[A-Za-z]:|\\\\)")
+# VS Code on Windows stores file URIs as /c:/... after unquoting.
+_VSCODE_WIN_PATH_RE = re.compile(r"^/([A-Za-z]):/")
 
 
 def canonical_project(path: str | None) -> str | None:
@@ -50,10 +52,20 @@ def canonical_project(path: str | None) -> str | None:
     """
     if not isinstance(path, str) or not path:
         return path
+    # VS Code on Windows produces file:///c%3A/... which unquotes to /c:/...
+    # Strip the spurious leading slash and upcase the drive letter so it
+    # matches what Claude Code and other agents emit (C:/...).
+    m = _VSCODE_WIN_PATH_RE.match(path)
+    if m:
+        path = m.group(1).upper() + ":/" + path[len(m.group(0)):]
     if _WIN_PATH_RE.match(path):
         path = path.replace("\\", "/")
     trimmed = path.rstrip("/")
     # A lone "/" or "//" must not collapse to "".
+    # A bare Windows drive root ("C:/" → "C:") must not lose its slash
+    # — "C:" means "current directory on drive C", not the drive root.
+    if re.match(r"^[A-Za-z]:$", trimmed):
+        return trimmed + "/"
     return trimmed if trimmed else path
 
 
