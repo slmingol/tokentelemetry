@@ -144,6 +144,7 @@ def test_canonical_project_preserves_drive_root():
     f = canonical_project
     assert f("C:/") == "C:/"
     assert f("c:/") == "c:/"   # POSIX-cased passthrough (not a VS Code path)
+    assert f("C:") == "C:"     # bare drive specifier must not gain a slash
 
 
 def test_canonical_project_passes_sentinels_through():

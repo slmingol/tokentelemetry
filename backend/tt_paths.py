@@ -45,10 +45,15 @@ def canonical_project(path: str | None) -> str | None:
     slashes; every path loses trailing separators. A backslash inside a POSIX
     path is a legal filename character there, so it is never rewritten.
 
-    Not folded on purpose: letter case (``C:\\Repo`` vs ``c:/repo`` stay
-    distinct — folding would merge different directories on case-sensitive
-    filesystems). Non-path values ("unknown", agent sentinels, ``None``,
-    ``""``) pass through unchanged.
+    Exception: VS Code on Windows emits ``file:///c%3A/...`` which
+    URL-decodes to ``/c:/...``; the leading slash is stripped and the drive
+    letter is uppercased to match what other agents emit (``C:/...``).
+    That single normalisation intentionally changes case for that prefix.
+
+    Not folded on purpose: letter case elsewhere (``C:\\Repo`` vs ``c:/repo``
+    stay distinct — folding would merge different directories on
+    case-sensitive filesystems). Non-path values ("unknown", agent sentinels,
+    ``None``, ``""``) pass through unchanged.
     """
     if not isinstance(path, str) or not path:
         return path
