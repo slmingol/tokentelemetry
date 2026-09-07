@@ -60,11 +60,14 @@ def canonical_project(path: str | None) -> str | None:
         path = m.group(1).upper() + ":/" + path[len(m.group(0)):]
     if _WIN_PATH_RE.match(path):
         path = path.replace("\\", "/")
+    had_trailing_slash = path.endswith("/") or path.endswith("\\")
     trimmed = path.rstrip("/")
     # A lone "/" or "//" must not collapse to "".
-    # A bare Windows drive root ("C:/" → "C:") must not lose its slash
-    # — "C:" means "current directory on drive C", not the drive root.
-    if re.match(r"^[A-Za-z]:$", trimmed):
+    # "C:/" (drive root) must stay "C:/" — "C:" means "current dir on
+    # drive C" in Windows, which is semantically different. Only restore
+    # the slash when the input actually had one (i.e. this was a root path,
+    # not a bare drive specifier).
+    if re.match(r"^[A-Za-z]:$", trimmed) and had_trailing_slash:
         return trimmed + "/"
     return trimmed if trimmed else path
 

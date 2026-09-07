@@ -3893,6 +3893,7 @@ def _scan_cline_sessions() -> List[Dict[str, Any]]:
             finally:
                 conn.close()
         except Exception as _exc:
+            import logging
             logging.getLogger("tokentelemetry.cline").warning(
                 "Cline SQLite scan failed (%s): %s", db_path.name, _exc
             )
@@ -7202,6 +7203,7 @@ def _scan_sessions_sync():
                                                 sess["plans"].append({"session_id": sid, "agent": "codex", "timestamp": sess["timestamp"], "content": content})
                                         except Exception: pass
                 except Exception as _exc:
+                    import logging
                     logging.getLogger("tokentelemetry.codex").warning(
                         "Codex rollout read failed (%s): %s", rollout_file.name, _exc
                     )
@@ -8295,6 +8297,7 @@ def _scan_sessions_sync():
             finally:
                 conn.close()
         except Exception as _exc:
+            import logging
             logging.getLogger("tokentelemetry.hermes").warning(
                 "Hermes SQLite scan failed (%s, profile=%s): %s",
                 db_path.name, h_profile, _exc,
