@@ -46,7 +46,7 @@ interface Session {
   /** Hermes-only: cli / telegram / cron / etc. */
   source_subtype?: string;
   hermes_profile?: string;
-  parent_session_id?: string;
+  parent_session_id?: string | null;
 }
 
 interface AnalyticsResponse {
@@ -301,6 +301,8 @@ export default function Home() {
             <div className="flex items-center gap-3">
               {hiddenSubagentCount > 0 || showSubagents ? (
                 <button
+                  type="button"
+                  aria-pressed={showSubagents}
                   onClick={() => setShowSubagents((v) => !v)}
                   className="text-[10px] uppercase tracking-[0.15em] text-[var(--tt-fg-dim)] hover:text-[var(--tt-brand)] transition-colors"
                 >

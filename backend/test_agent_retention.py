@@ -14,29 +14,24 @@ import tempfile
 sys.path.insert(0, os.path.dirname(__file__))
 
 _VAR = "TOKENTELEMETRY_DATA_DIR"
-_saved_var = None
-
-
-def setup_module(_module):
-    global _saved_var
-    _saved_var = os.environ.get(_VAR)
-
-
-def teardown_module(_module):
-    if _saved_var is None:
-        os.environ.pop(_VAR, None)
-    else:
-        os.environ[_VAR] = _saved_var
 
 
 def _fresh_module():
     """Reimport agent_retention against a fresh data dir (RETENTION_FILE is
-    resolved at import time)."""
+    resolved at import time). Saves and restores _VAR so the caller's env
+    is unchanged whether running under pytest or directly."""
+    _saved = os.environ.get(_VAR)
     os.environ[_VAR] = tempfile.mkdtemp(prefix="tt-ret-")
-    import importlib
-    import agent_retention
-    importlib.reload(agent_retention)
-    return agent_retention
+    try:
+        import importlib
+        import agent_retention
+        importlib.reload(agent_retention)
+        return agent_retention
+    finally:
+        if _saved is None:
+            os.environ.pop(_VAR, None)
+        else:
+            os.environ[_VAR] = _saved
 
 
 def test_claude_default_is_30_when_no_settings():
