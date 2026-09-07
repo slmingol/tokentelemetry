@@ -3895,7 +3895,7 @@ def _scan_cline_sessions() -> List[Dict[str, Any]]:
         except Exception as _exc:
             import logging
             logging.getLogger("tokentelemetry.cline").warning(
-                "Cline SQLite scan failed (%s): %s", db_path.name, _exc
+                "Cline SQLite scan failed (%s): %s", db_path.name, _exc, exc_info=True
             )
 
         # Cline spawns subagents/teams: each subagent is its OWN row with
@@ -7205,7 +7205,7 @@ def _scan_sessions_sync():
                 except Exception as _exc:
                     import logging
                     logging.getLogger("tokentelemetry.codex").warning(
-                        "Codex rollout read failed (%s): %s", rollout_file.name, _exc
+                        "Codex rollout read failed (%s): %s", rollout_file.name, _exc, exc_info=True
                     )
 
             if published_sites:
@@ -8300,7 +8300,7 @@ def _scan_sessions_sync():
             import logging
             logging.getLogger("tokentelemetry.hermes").warning(
                 "Hermes SQLite scan failed (%s, profile=%s): %s",
-                db_path.name, h_profile, _exc,
+                db_path.name, h_profile, _exc, exc_info=True,
             )
     # Hermes hierarchy: children carry parent_session_id (pre-aggregated tokens
     # of their own, already in totals) — annotate parents, never re-sum.
