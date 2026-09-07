@@ -336,8 +336,8 @@ export default function Home() {
                   </TR>
                 </THead>
                 <TBody>
-                  {visibleSessions.slice(0, 50).map((s, i) => (
-                    <TR key={`${s.agent}-${s.id}-${i}`} interactive>
+                  {visibleSessions.slice(0, 50).map((s) => (
+                    <TR key={`${s.agent}-${s.id}`} interactive>
                       <TD className="pl-5">
                         <Link href={`/sessions/${s.id}?agent=${s.agent}&from=${encodeURIComponent(pathname)}`} className="flex items-center gap-1.5">
                           <AgentBadge agent={s.agent} />
