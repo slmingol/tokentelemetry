@@ -14,6 +14,19 @@ import tempfile
 sys.path.insert(0, os.path.dirname(__file__))
 
 _VAR = "TOKENTELEMETRY_DATA_DIR"
+_saved_var = None
+
+
+def setup_module(_module):
+    global _saved_var
+    _saved_var = os.environ.get(_VAR)
+
+
+def teardown_module(_module):
+    if _saved_var is None:
+        os.environ.pop(_VAR, None)
+    else:
+        os.environ[_VAR] = _saved_var
 
 
 def _fresh_module():
